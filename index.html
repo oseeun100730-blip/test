@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>말랑말랑 고난도 상식 왕 퀴즈</title>
+    <style>
+        /* 폰트 및 파스텔 테마 기본 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #e8f5e9; /* 연한 파스텔 그린 배경 */
+            background-image: radial-gradient(#c8e6c9 1.5px, transparent 1.5px), radial-gradient(#c8e6c9 1.5px, #e8f5e9 1.5px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            min-h: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 메인 게임 컨테이너 카드 */
+        .game-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 32px;
+            padding: 32px 24px;
+            box-shadow: 0 15px 35px rgba(129, 199, 132, 0.3), 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 4px solid #a5d6a7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 타이틀 스타일 */
+        h1.game-title {
+            font-family: 'Gaegu', cursive;
+            font-size: 2.4rem;
+            color: #2e7d32;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0px #c8e6c9;
+            word-break: keep-all;
+        }
+
+        p.game-desc {
+            font-size: 0.95rem;
+            color: #558b2f;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        /* 큼직하고 둥근 파스텔 버튼 공통 */
+        .btn {
+            font-family: 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            padding: 16px 32px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            outline: none;
+            box-shadow: 0 6px 0px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .btn-start {
+            background-color: #66bb6a; /* 그린 파스텔 */
+            color: #ffffff;
+            font-size: 1.3rem;
+            width: 80%;
+        }
+
+        .btn-start:hover {
+            background-color: #4caf50;
+            transform: scale(1.03);
+        }
+
+        .btn-restart {
+            background-color: #26a69a; /* 민트 그린 */
+            color: #ffffff;
+            width: 80%;
+            margin-top: 16px;
+        }
+
+        .btn-restart:hover {
+            background-color: #00897b;
+            transform: scale(1.03);
+        }
+
+        /* 화면 전환 처리 */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🐹 기니피그 마스코트 캐릭터 스타일 추가 */
+        .guinea-pig-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .guinea-pig-avatar {
+            font-size: 3.5rem;
+            background: #ffffff;
+            width: 76 h-76px;
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #a5d6a7;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            animation: bouncePig 2s infinite ease-in-out;
+            flex-shrink: 0;
+        }
+
+        @keyframes bouncePig {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .speech-bubble {
+            position: relative;
+            background: #ffffff;
+            border: 2px solid #81c784;
+            border-radius: 18px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #2e7d32;
+            max-width: 260px;
+            text-align: left;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+            word-break: keep-all;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px 10px 6px 0;
+            border-style: solid;
+            border-color: transparent #81c784 transparent transparent;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 5px 8px 5px 0;
+            border-style: solid;
+            border-color: transparent #ffffff transparent transparent;
+        }
+
+        /* 상단 상태 바 (남은 시간 & 점수) */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #d7ffd9;
+            padding: 12px 20px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            color: #1b5e20;
+        }
+
+        .badge {
+            background-color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        /* 퀴즈 문제 카드 영역 */
+        .quiz-card {
+            background-color: #f1f8e9; /* 파스텔 연초록 */
+            border-radius: 24px;
+            padding: 24px 18px;
+            margin-bottom: 20px;
+            border: 3px dashed #a5d6a7;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .question-number {
+            font-size: 0.85rem;
+            color: #388e3c;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1b5e20;
+            line-height: 1.45;
+            word-break: keep-all;
+        }
+
+        /* 보기 옵션 리스트 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .option-btn {
+            background-color: #ffffff;
+            color: #2e7d32;
+            border: 2px solid #a5d6a7;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:hover {
+            background-color: #e8f5e9;
+            transform: translateX(4px);
+        }
+
+        .option-num {
+            background-color: #81c784;
+            color: #ffffff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* 클릭 시 정답/오답 애니메이션 효과 */
+        .option-btn.correct {
+            background-color: #a5d6a7 !important;
+            border-color: #388e3c !important;
+            color: #1b5e20 !important;
+            animation: bounce 0.4s ease;
+        }
+
+        .option-btn.wrong {
+            background-color: #ffcdd2 !important;
+            border-color: #ef5350 !important;
+            color: #b71c1c !important;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* 결과 화면 아이콘 및 메시지 */
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .result-title.success { color: #2e7d32; }
+        .result-title.fail { color: #e53935; }
+
+        .result-score-box {
+            background-color: #e8f5e9;
+            border-radius: 20px;
+            padding: 16px;
+            margin: 20px 0;
+            border: 2px solid #c8e6c9;
+        }
+
+        .result-score-text {
+            font-size: 1.2rem;
+            color: #1b5e20;
+            font-weight: 700;
+        }
+
+        .result-score-number {
+            font-size: 2.2rem;
+            color: #2e7d32;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        
+        <!-- 1. 시작 화면 -->
+        <div id="start-screen" class="screen active">
+            <div style="font-size: 4.5rem; margin-bottom: 10px;">🐹</div>
+            <h1 class="game-title">도전! 파스텔 상식 왕</h1>
+            <p class="game-desc">
+                기니피그 '포포'와 함께하는 고난도 퀴즈!<br>
+                5개 문제를 맞히고 기니피그의 최고 친구가 되어보세요.
+            </p>
+            <button class="btn btn-start" onclick="startGame()">
+                <span>도전 시작하기</span> 🌿
+            </button>
+        </div>
+
+        <!-- 2. 게임 진행 화면 -->
+        <div id="game-screen" class="screen">
+            <!-- 상태 표시 바 -->
+            <div class="status-bar">
+                <span>시간 <span id="timer-text" class="badge">15초</span></span>
+                <span>점수 <span id="score-text" class="badge">0점</span></span>
+            </div>
+
+            <!-- 기니피그 반응 마스코트 영역 -->
+            <div class="guinea-pig-container">
+                <div id="pig-avatar" class="guinea-pig-avatar">🐹</div>
+                <div id="pig-speech" class="speech-bubble">안녕! 나는 포포야. 준비되면 문제를 풀어봐! 🌿</div>
+            </div>
+
+            <!-- 퀴즈 문제 영역 -->
+            <div class="quiz-card">
+                <span id="question-num" class="question-number">문제 1 / 5</span>
+                <p id="question-text" class="question-text">문제가 여기에 표시됩니다.</p>
+            </div>
+
+            <!-- 정답 선택 보기 -->
+            <div id="options-container" class="options-grid">
+                <!-- 자바스크립트로 버튼 생성 -->
+            </div>
+        </div>
+
+        <!-- 3. 결과 화면 (성공/실패) -->
+        <div id="result-screen" class="screen">
+            <div id="result-icon" class="result-icon">🏆</div>
+            <h2 id="result-title" class="result-title success">상식 왕 달성!</h2>
+            <p id="result-desc" style="color: #616161; font-size: 0.95rem;">대단해요! 높은 난이도의 상식 문제를 정복하셨군요!</p>
+
+            <div class="result-score-box">
+                <div class="result-score-text">최종 점수</div>
+                <div id="final-score" class="result-score-number">100점</div>
+            </div>
+
+            <button class="btn btn-restart" onclick="restartGame()">
+                <span>다시 도전하기</span> 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        /* ==========================================
+           퀴즈 데이터베이스 (고난도 상식 문제)
+           ========================================== */
+        const quizData = [
+            {
+                question: "조선시대 왕실의 사당으로, 세계유산에 등재된 건축물은?",
+                options: ["창덕궁", "종묘", "경복궁", "덕수궁"],
+                answer: 1 // 종묘
+            },
+            {
+                question: "빛의 속도로 이동할 때 시간이 천천히 흐른다는 이론을 발표한 과학자는?",
+                options: ["아이작 뉴턴", "알베르트 아인슈타인", "갈릴레오 갈릴레이", "스티븐 호킹"],
+                answer: 1 // 아인슈타인
+            },
+            {
+                question: "인체의 장기 중 유일하게 자라거나 재생이 가능한 장기는?",
+                options: ["심장", "신장(콩팥)", "간", "폐"],
+                answer: 2 // 간
+            },
+            {
+                question: "세계에서 가장 면적이 넓은 사막은 어디일까요?",
+                options: ["사하라 사막", "고비 사막", "아타카마 사막", "남극 사막"],
+                answer: 3 // 남극 사막 (한대 사막 포함 기준)
+            },
+            {
+                question: "컴퓨터 알고리즘에서 시간 복잡도를 나타낼 때 주로 사용하는 표기법은?",
+                options: ["빅오(Big-O) 표기법", "바이너리(Binary) 표기법", "아스키(ASCII) 표기법", "해시(Hash) 표기법"],
+                answer: 0 // 빅오 표기법
+            }
+        ];
+
+        /* 기니피그 대사 라이브러리 */
+        const pigComments = {
+            start: ["신나게 풀어보자! 찍찍!", "내가 응원하고 있어! 🌿", "집중해봐, 넌 할 수 있어!"],
+            correct: ["정답이야! 우와 멋져! 🥕", "대단한걸? 최고야! 🐹✨", "딩동댕! 포포가 칭찬해!"],
+            wrong: ["아쉬워... 다음 문제는 맞춰보자! 🥺", "괜찮아! 포포도 헷갈렸어 찍!", "토닥토닥, 조금만 더 힘내!"],
+            timeout: ["시간이 다 지나버렸어! ⏰", "어라, 고민하다가 시간이... 😭"]
+        };
+
+        /* ==========================================
+           게임 상태 변수
+           ========================================== */
+        let currentQuizIndex = 0;
+        let score = 0;
+        let timeLeft = 15;
+        let timerInterval = null;
+        let isAnswering = false; // 중복 클릭 방지 플래그
+
+        /* ==========================================
+           게임 시작 및 화면 전환
+           ========================================== */
+        function startGame() {
+            currentQuizIndex = 0;
+            score = 0;
+            showScreen('game-screen');
+            loadQuiz();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        /* ==========================================
+           기니피그 반응 업데이트 함수
+           ========================================== */
+        function updatePig(avatarEmoji, message) {
+            const avatarEl = document.getElementById('pig-avatar');
+            const speechEl = document.getElementById('pig-speech');
+            if (avatarEl && speechEl) {
+                avatarEl.innerText = avatarEmoji;
+                speechEl.innerText = message;
+            }
+        }
+
+        function getRandomComment(list) {
+            return list[Math.floor(Math.random() * list.length)];
+        }
+
+        /* ==========================================
+           퀴즈 로드 및 타이머 작동
+           ========================================== */
+        function loadQuiz() {
+            isAnswering = false;
+            const currentQuiz = quizData[currentQuizIndex];
+            
+            // 점수 및 문항 번호 업데이트
+            document.getElementById('score-text').innerText = score + '점';
+            document.getElementById('question-num').innerText = `문제 ${currentQuizIndex + 1} / ${quizData.length}`;
+            document.getElementById('question-text').innerText = currentQuiz.question;
+
+            // 기니피그 응원 대사
+            updatePig('🐹', getRandomComment(pigComments.start));
+
+            // 보기 버튼 생성
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            currentQuiz.options.forEach((optionText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="option-num">${index + 1}</span> ${optionText}`;
+                btn.onclick = () => selectOption(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            // 타이머 초기화 및 시작 (문제당 15초)
+            resetTimer();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 15;
+            document.getElementById('timer-text').innerText = timeLeft + '초';
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-text').innerText = timeLeft + '초';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        /* ==========================================
+           정답 선택 처리 및 애니메이션
+           ========================================== */
+        function selectOption(selectedIndex, btnElement) {
+            if (isAnswering) return; // 이미 선택한 경우 클릭 불가
+            isAnswering = true;
+            clearInterval(timerInterval);
+
+            const currentQuiz = quizData[currentQuizIndex];
+            const isCorrect = (selectedIndex === currentQuiz.answer);
+
+            if (isCorrect) {
+                btnElement.classList.add('correct');
+                score += 20; // 문제당 20점
+                document.getElementById('score-text').innerText = score + '점';
+                updatePig('🥳', getRandomComment(pigComments.correct));
+            } else {
+                btnElement.classList.add('wrong');
+                // 정답 버튼도 함께 표시
+                const allButtons = document.querySelectorAll('.option-btn');
+                allButtons[currentQuiz.answer].classList.add('correct');
+                updatePig('🥺', getRandomComment(pigComments.wrong));
+            }
+
+            // 1.2초 후 다음 문제로 이동
+            setTimeout(() => {
+                nextQuestion();
+            }, 1200);
+        }
+
+        function handleTimeOut() {
+            if (isAnswering) return;
+            isAnswering = true;
+
+            // 시간 초과 시 정답 표시
+            const currentQuiz = quizData[currentQuizIndex];
+            const allButtons = document.querySelectorAll('.option-btn');
+            allButtons[currentQuiz.answer].classList.add('correct');
+
+            updatePig('😭', getRandomComment(pigComments.timeout));
+
+            setTimeout(() => {
+                nextQuestion();
+            }, 1200);
+        }
+
+        /* ==========================================
+           다음 문제 이동 또는 게임 종료
+           ========================================== */
+        function nextQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizData.length) {
+                loadQuiz();
+            } else {
+                endGame();
+            }
+        }
+
+        /* ==========================================
+           게임 종료 및 성공/실패 메시지 처리
+           ========================================== */
+        function endGame() {
+            clearInterval(timerInterval);
+            showScreen('result-screen');
+
+            const resultIcon = document.getElementById('result-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultDesc = document.getElementById('result-desc');
+            const finalScore = document.getElementById('final-score');
+
+            finalScore.innerText = score + '점';
+
+            // 60점 이상 성공 조건
+            if (score >= 60) {
+                resultIcon.innerText = '🐹🎉';
+                resultTitle.innerText = '상식 왕 달성!';
+                resultTitle.className = 'result-title success';
+                resultDesc.innerText = '기니피그 포포가 최고의 상식 친구라며 기뻐하고 있어요!';
+            } else {
+                resultIcon.innerText = '🐹💬';
+                resultTitle.innerText = '아쉬워요! 실패!';
+                resultTitle.className = 'result-title fail';
+                resultDesc.innerText = '포포와 함께 다시 한번 도전해 60점 이상을 얻어보세요!';
+            }
+        }
+
+        /* ==========================================
+           게임 다시 시작
+           ========================================== */
+        function restartGame() {
+            showScreen('start-screen');
+        }
+    </script>
+</body>
+</html>
